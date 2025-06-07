@@ -2,10 +2,11 @@
 # It provides a detailed error message including the file name, line number, and error message.
 
 import sys
+from types import ModuleType
 from src.logger import logging
 
 # static method
-def error_message_details(error, error_details: sys):
+def error_message_details(error, error_details: ModuleType = sys) -> str:
     """
     This function returns the error message with the information of the file name, line number, 
     and error message.
@@ -19,17 +20,22 @@ def error_message_details(error, error_details: sys):
     """
     _, _, exc_tb = error_details.exc_info()
     # extracting file name from exception traceback
-    file_name = exc_tb.tb_frame.f_code.co_filename
+    if exc_tb is not None:
+        file_name = exc_tb.tb_frame.f_code.co_filename
+        line_number = exc_tb.tb_lineno
+    else:
+        file_name = "Unknown"
+        line_number = "Unknown"
 
     error_message = "Error occurred in python script name [{0}] line number [{1}] error message [{2}]".format(
-        file_name, exc_tb.tb_lineno, str(error)
+        file_name, line_number, str(error)
     )
     
     return error_message
 
   
 class AppException(Exception):
-    def __init__(self, error_message: Exception, error_details: sys):
+    def __init__(self, error_message: Exception, error_details: ModuleType = sys) -> None:
         super().__init__(error_message)
         """
         Initializes a CustomException instance with a detailed error message.
