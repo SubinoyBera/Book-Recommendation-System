@@ -1,0 +1,7 @@
+artifacts_root: artifacts
+
+data_ingestion:
+  data_download_url: https://github.com/SubinoyBera/
+  raw_data_dir: raw_data
+  dataset_dir: datasets
+  
