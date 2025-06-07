@@ -18,18 +18,21 @@ def error_message_details(error, error_details: ModuleType = sys) -> str:
     Returns:
     str: The error message with the information of the file name, line number, and error message
     """
-    _, _, exc_tb = error_details.exc_info()
-    # extracting file name from exception traceback
-    if exc_tb is not None:
-        file_name = exc_tb.tb_frame.f_code.co_filename
-        line_number = exc_tb.tb_lineno
-    else:
-        file_name = "Unknown"
-        line_number = "Unknown"
+    if isinstance(error, Exception):
+        _, _, exc_tb = error_details.exc_info()
+        # extracting file name from exception traceback
+        if exc_tb is not None:
+            file_name = exc_tb.tb_frame.f_code.co_filename
+            line_number = exc_tb.tb_lineno
+        else:
+            file_name = "Unknown"
+            line_number = "Unknown"
 
-    error_message = "Error occurred in python script name [{0}] line number [{1}] error message [{2}]".format(
-        file_name, line_number, str(error)
-    )
+        error_message = "Error occurred in python script name [{0}] line number [{1}] error message [{2}]".format(
+            file_name, line_number, str(error)
+        )
+    else:
+        error_message = str(error)
     
     return error_message
 
