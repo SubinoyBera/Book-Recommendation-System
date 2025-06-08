@@ -8,7 +8,7 @@ data_ingestion:
 
 data_validation:
   root_dir: artifacts/data_validation
-  clean_data_dir: clean_data
-  serialized_obj_dir: serialized_objects
+  STATUS_FILE: status.txt
+  valid_data_dir: valid_data
   books_csvfile: books.csv
   ratings_csvfile: books_ratings.csv

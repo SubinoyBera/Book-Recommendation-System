@@ -10,7 +10,9 @@ class DataIngestionConfig:
 
 @dataclass(frozen=True)
 class DataValidationConfig:
-    clean_data_dir: Path
+    valid_data_dir: Path
     books_csvfile: Path
     ratings_csvfile: Path
-    serialized_objects_dir: Path
+    book_schema: dict
+    ratings_schema: dict
+    STATUS_FILE: Path
