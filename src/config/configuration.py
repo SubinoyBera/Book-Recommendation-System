@@ -31,8 +31,8 @@ class AppConfiguration:
             create_directories([ingestion_config.root_dir])
 
             ingestion_root_dir = ingestion_config.root_dir
-            ingestion_dir = ingestion_config.ingested_dataset
-            raw_data_dir = ingestion_config.raw_dataset
+            ingestion_dir = ingestion_config.ingestion_dir
+            raw_data_dir = ingestion_config.raw_data_dir
 
             raw_data_dir = os.path.join(ingestion_root_dir, raw_data_dir)
             ingestion_data_dir = os.path.join(ingestion_root_dir, ingestion_dir)
@@ -58,11 +58,13 @@ class AppConfiguration:
             create_directories([validation_config.root_dir])
 
             validation_root_dir = validation_config.root_dir
+            clean_data_dir = validation_config.clean_data_dir
+            serialized_obj_dir = validation_config.serialized_obj_dir
 
             books_csvfile_dir = os.path.join(ingestion_config.root_dir, ingestion_config.ingested_data)
             ratings_csvfile_dir = os.path.join(ingestion_config.root_dir, ingestion_config.ingested_data)
-            clean_data_path = os.path.join(validation_root_dir, validation_config.clean_data_dir)
-            serialized_obj_dir = os.path.join(validation_root_dir, validation_config.serialized_obj_dir)
+            clean_data_path = os.path.join(validation_root_dir, clean_data_dir)
+            serialized_obj_dir = os.path.join(validation_root_dir, serialized_obj_dir)
 
             configuration = DataValidationConfig(
                 clean_data_dir = clean_data_path,

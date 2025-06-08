@@ -1,11 +1,16 @@
-from collections import namedtuple
+from dataclasses import dataclass
+from pathlib import Path
 
-DataIngestionConfig = namedtuple("DatasetConfig", ["data_download_url",
-                                                   "raw_data_dir",
-                                                   "ingested_dir"])
+@dataclass(frozen=True)
+class DataIngestionConfig:
+    data_download_url: str
+    raw_data_dir: Path
+    ingested_dir: Path
 
 
-DataValidationConfig = namedtuple("DataValidation", ["clean_data_dir",
-                                                    "books_csvfile",
-                                                     "ratings_csvfile",
-                                                     "serialized_objects_dir"])
+@dataclass(frozen=True)
+class DataValidationConfig:
+    clean_data_dir: Path
+    books_csvfile: Path
+    ratings_csvfile: Path
+    serialized_objects_dir: Path
