@@ -15,7 +15,7 @@ class DataIngestion:
         """
         try:
             logging.info(f"{'='*20}Data Ingestion log started.{'='*20} ")
-            self.data_ingestion_config= app_config.data_ingestion_config()
+            self.data_ingestion_config = app_config.data_ingestion_config()
 
         except Exception as e:
             error_message = f"Data Ingestion error: {e}"
@@ -51,7 +51,7 @@ class DataIngestion:
             raise AppException(Exception(error_message), sys)
 
 
-    def extract_zip_file(self,zip_file_path: str):
+    def extract_zip_file(self, zip_file_path : str):
         """
         Extracts the given zip file into a given directory.
         Args:
