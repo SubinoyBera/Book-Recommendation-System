@@ -61,8 +61,8 @@ class AppConfiguration:
             clean_data_dir = validation_config.clean_data_dir
             serialized_obj_dir = validation_config.serialized_obj_dir
 
-            books_csvfile_dir = os.path.join(ingestion_config.root_dir, ingestion_config.ingested_data)
-            ratings_csvfile_dir = os.path.join(ingestion_config.root_dir, ingestion_config.ingested_data)
+            books_csvfile_dir = os.path.join(ingestion_config.root_dir, ingestion_config.ingestion_dir)
+            ratings_csvfile_dir = os.path.join(ingestion_config.root_dir, ingestion_config.ingestion_dir)
             clean_data_path = os.path.join(validation_root_dir, clean_data_dir)
             serialized_obj_dir = os.path.join(validation_root_dir, serialized_obj_dir)
 
