@@ -35,12 +35,12 @@ class DataValidation:
             for data validation.
         """
         try:
-            logging.info(f"{'='*20}Data Ingestion log started.{'='*20} ")
+            logging.info(f"{'='*20}Data Validation log started.{'='*20} ")
             self.data_validation_config = app_config.data_validation_config()
 
         except Exception as e:
-            error_message = f"Data validation Configuration initialization error: {e}"
-            raise AppException(Exception(error_message), sys)
+            logging.error(f"Data validation Configuration initialization error: {e}")
+            raise AppException(e, sys)
 
 
     def validate_dataset(self):
@@ -92,15 +92,15 @@ class DataValidation:
 
             except Exception as e:
                 if book_validation_status == False:
-                    error_message = f"Books dataset validation failed: {e}"
-                    raise AppException(Exception(error_message), sys)
+                    logging.error(f"Books dataset validation failed: {e}")
+                    raise AppException(e, sys)
                 else:
-                    error_message = f"Ratings dataset validation failed: {e}"
-                    raise AppException(Exception(error_message), sys)
+                    logging.error(f"Ratings dataset validation failed: {e}")
+                    raise AppException(e, sys)
             
         except Exception as e:
-            error_message = f"Dataset validation process failed: {e}"
-            raise AppException(Exception(error_message), sys)
+            logging.error(f"Dataset validation process failed: {e}")
+            raise AppException(e, sys)
 
 
     def initiate_data_vatidation(self):
@@ -115,5 +115,5 @@ class DataValidation:
             logging.info(f"{'='*20}Data Validation Completed Successfully.{'='*20} \n\n")
         
         except Exception as e:
-            error_message = f"Dataset Validation error: {e}"
-            raise AppException(Exception(error_message), sys)
+            logging.error(f"Dataset Validation error: {e}")
+            raise AppException(e, sys)
