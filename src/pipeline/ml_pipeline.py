@@ -3,11 +3,13 @@ from src.logger import logging
 from src.exception import AppException
 from src.components.data_ingestion import DataIngestion
 from src.components.data_validation import DataValidation
+from src.components.data_transformation import DataTransformation
 
 class MLPipeline:
     def __init__(self):
         self.data_ingestion = DataIngestion()
         self.data_validation = DataValidation()
+        self.data_transformation = DataTransformation()
     
     def main(self):
         try:
@@ -16,6 +18,9 @@ class MLPipeline:
 
             logging.info("STAGE:2 Data validation stage initiated")
             self.data_validation.initiate_data_vatidation()
+
+            logging.info("STAGE:3 Data validation stage initiated")
+            self.data_transformation.initiate_data_transformation()
         
         except Exception as e:
             logging.error(f"ML Pipeline Terminated: {e}", exc_info=True)
