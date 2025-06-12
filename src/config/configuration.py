@@ -1,10 +1,10 @@
-import os
 import sys
+from pathlib import Path
 from src.logger import logging
 from src.exception import AppException
 from src.utils import read_yaml, create_directories
-from constants import *
-from src.entity.config_entity import DataIngestionConfig, DataValidationConfig
+from constant.constants import *
+from src.entity.config_entity import DataIngestionConfig, DataValidationConfig, DataTransformationConfig
 
 class AppConfiguration:
     def __init__(self, 
@@ -38,8 +38,8 @@ class AppConfiguration:
             ingestion_dir = ingestion_config.ingestion_dir
             raw_data_dir = ingestion_config.raw_data_dir
 
-            raw_data_dir = os.path.join(ingestion_root_dir, raw_data_dir)
-            ingestion_data_dir = os.path.join(ingestion_root_dir, ingestion_dir)
+            raw_data_dir = Path(ingestion_root_dir, raw_data_dir)
+            ingestion_data_dir = Path(ingestion_root_dir, ingestion_dir)
 
             ingestion_configuration = DataIngestionConfig(
                 data_download_url = ingestion_config.data_download_url,
@@ -60,7 +60,6 @@ class AppConfiguration:
         Creates the configuration for Data Validation 
         Returns: DataValidationConfig object
         """
-
         try:
             validation_config = self.config.data_validation
             ingestion_config = self.config.data_ingestion
@@ -74,11 +73,11 @@ class AppConfiguration:
             books_csvfile = validation_config.books_csvfile
             ratings_csvfile = validation_config.ratings_csvfile
 
-            books_csvfile_path = os.path.join(ingestion_config.root_dir, ingestion_config.ingestion_dir, books_csvfile)
-            ratings_csvfile_path = os.path.join(ingestion_config.root_dir, ingestion_config.ingestion_dir, ratings_csvfile)
-            valid_data_path = os.path.join(validation_root_dir, valid_data_dir)
+            books_csvfile_path = Path(ingestion_config.root_dir, ingestion_config.ingestion_dir, books_csvfile)
+            ratings_csvfile_path = Path(ingestion_config.root_dir, ingestion_config.ingestion_dir, ratings_csvfile)
+            valid_data_path = Path(validation_root_dir, valid_data_dir)
             
-            STATUS_FILE_PATH = os.path.join(validation_root_dir, validation_config.STATUS_FILE)
+            STATUS_FILE_PATH = Path(validation_root_dir, validation_config.STATUS_FILE)
 
             validation_configuration = DataValidationConfig(
                 valid_data_dir = valid_data_path,
@@ -91,6 +90,33 @@ class AppConfiguration:
 
             logging.info(f"Data Validation process Configuration successfull")
             return validation_configuration
+
+        except Exception as e:
+            error_message = f"Error in Data Validation process Configuration: {e}"
+            raise AppException(Exception(error_message), sys)
+        
+
+    def data_transformation_config(self) -> DataTransformationConfig:
+        try:
+            transformation_config = self.config.data_transformation
+            validation_config = self.config.data_validation
+
+            create_directories(transformation_config.root_dir)
+            
+            books_data = transformation_config.valid_books_dataset
+            ratings_data = transformation_config.valid_ratings_dataset
+
+            transformation_root_dir = Path(transformation_config.root_dir)
+            books_data_path = Path(validation_config.root_dir, validation_config.valid_data_dir, books_data)
+            ratings_data_path = Path(validation_config.root_dir, validation_config.valid_data_dir, ratings_data)
+
+            transformation_configiguration = DataTransformationConfig(
+                transformation_dir = transformation_root_dir,
+                books_data_path = books_data_path,
+                ratings_data_path = ratings_data_path,
+            )
+
+            return transformation_configiguration
 
         except Exception as e:
             error_message = f"Error in Data Validation process Configuration: {e}"

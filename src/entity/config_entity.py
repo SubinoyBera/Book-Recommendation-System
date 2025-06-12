@@ -16,3 +16,9 @@ class DataValidationConfig:
     book_schema: dict
     ratings_schema: dict
     STATUS_FILE: Path
+
+@dataclass(frozen=True)
+class DataTransformationConfig:
+    transformation_dir: Path
+    books_data_path: Path
+    ratings_data_path: Path

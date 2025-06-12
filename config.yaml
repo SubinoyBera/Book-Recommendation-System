@@ -11,4 +11,9 @@ data_validation:
   STATUS_FILE: status.txt
   valid_data_dir: valid_data
   books_csvfile: books.csv
-  ratings_csvfile: books_ratings.csv
+  ratings_csvfile: ratings.csv
+
+data_transformation:
+  root_dir: artifacts/data_transformation
+  valid_books_dataset: valid_books_dataset.csv
+  valid_ratings_dataset: valid_ratings_dataset.csv

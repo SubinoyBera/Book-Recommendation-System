@@ -84,7 +84,7 @@ class DataValidation:
                     logging.info("Datasets successsfully validated")
                     create_directories(self.data_validation_config.valid_data_dir)
                     valid_books_dataset = "valid_books_dataset.csv"
-                    valid_ratings_dataset = "valid_books_dataset.csv"
+                    valid_ratings_dataset = "valid_ratings_dataset.csv"
 
                     books.to_csv(Path(self.data_validation_config.valid_data_dir/valid_books_dataset), index=False)
                     ratings.to_csv(Path(self.data_validation_config.valid_data_dir/valid_ratings_dataset), index=False)
