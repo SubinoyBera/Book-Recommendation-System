@@ -17,3 +17,7 @@ data_transformation:
   root_dir: artifacts/data_transformation
   valid_books_dataset: valid_books_dataset.csv
   valid_ratings_dataset: valid_ratings_dataset.csv
+
+model_trainer:
+  root_dir: artifacts/ML_model
+  trained_model: model.pkl

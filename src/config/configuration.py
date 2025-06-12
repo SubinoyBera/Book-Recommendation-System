@@ -4,7 +4,7 @@ from src.logger import logging
 from src.exception import AppException
 from src.utils import read_yaml, create_directories
 from constant.constants import *
-from src.entity.config_entity import DataIngestionConfig, DataValidationConfig, DataTransformationConfig
+from src.entity.config_entity import DataIngestionConfig, DataValidationConfig, DataTransformationConfig, ModelTrainerConfig
 
 class AppConfiguration:
     def __init__(self, 
@@ -21,8 +21,8 @@ class AppConfiguration:
             self.schema = read_yaml(config_schemapath)
 
         except Exception as e:
-            error_message = f"Failed to load configuration: {e}"
-            raise AppException(Exception(error_message), sys)
+            logging.info(f"Failed to load configuration: {e}")
+            raise AppException(e, sys)
 
     
     def data_ingestion_config(self) -> DataIngestionConfig:   
@@ -51,8 +51,8 @@ class AppConfiguration:
             return ingestion_configuration
 
         except Exception as e:
-            error_message = f"Error in Data Ingestion Configuration: {e}"
-            raise AppException(Exception(error_message), sys)
+            logging.info(f"Error in Data Ingestion Configuration: {e}")
+            raise AppException(e, sys)
 
 
     def data_validation_config(self) -> DataValidationConfig:
@@ -92,11 +92,15 @@ class AppConfiguration:
             return validation_configuration
 
         except Exception as e:
-            error_message = f"Error in Data Validation process Configuration: {e}"
-            raise AppException(Exception(error_message), sys)
+            logging.info(f"Error in Data Validation process Configuration: {e}")
+            raise AppException(e, sys)
         
 
     def data_transformation_config(self) -> DataTransformationConfig:
+        """
+        Creates the configuration for Data Transformation 
+        Returns: DataTransformationConfig object
+        """
         try:
             transformation_config = self.config.data_transformation
             validation_config = self.config.data_validation
@@ -119,5 +123,30 @@ class AppConfiguration:
             return transformation_configiguration
 
         except Exception as e:
-            error_message = f"Error in Data Validation process Configuration: {e}"
-            raise AppException(Exception(error_message), sys)
+            logging.info(f"Error in Data Validation process Configuration: {e}")
+            raise AppException(e, sys)
+        
+
+    def model_trainer_config(self):
+        """
+        Creates the configuration for Model Training 
+        Returns: ModelTrainerConfig object
+        """
+        try:
+            trainer_config = self.config.model_trainer
+
+            create_directories(trainer_config.root_dir)
+
+            trained_model_dir = Path(trainer_config.root_dir)
+            trained_model = trainer_config.trained_model
+
+            training_configuration = ModelTrainerConfig(
+                trained_model_dir = trained_model_dir,
+                model_name = trained_model
+            )
+
+            return training_configuration
+
+        except Exception as e:
+            logging.error(f"Error in Model Training Configuration: {e}")
+            raise AppException(e, sys)
