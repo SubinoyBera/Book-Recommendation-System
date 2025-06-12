@@ -26,10 +26,11 @@ def read_yaml(path_to_yaml: Path) -> ConfigBox:
             return ConfigBox(content)
         
     except Exception as e:
+        logging.error(f"Failed to read YAML file at {path_to_yaml}: {e}")
         raise AppException(e, sys)
 
 @ensure_annotations
-def create_directories(path_to_directories: list, verbose = True):
+def create_directories(path_to_directories: list, verbose=True):
     """
     Creates directories specified in the given list of paths.
     Args:
@@ -43,5 +44,5 @@ def create_directories(path_to_directories: list, verbose = True):
                 logging.info(f"Created directory: {path}")
 
     except Exception as e:
-        error_message = f"Failed to create directory at {path}: {e}"
-        raise AppException(Exception(error_message), sys)
+        logging.error("Failed to create directory at {path}: {e}")
+        raise AppException(e, sys)
