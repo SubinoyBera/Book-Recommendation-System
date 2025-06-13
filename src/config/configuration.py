@@ -1,3 +1,5 @@
+# Configuration module for the Book Recommendation System
+# This module handles the loading and management of configuration settings for data ingestion, validation, transformation, and model training.
 import sys
 from pathlib import Path
 from src.logger import logging
