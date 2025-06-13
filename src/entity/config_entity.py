@@ -1,3 +1,6 @@
+## This module defines configuration entities for data ingestion, validation, transformation, and model training.
+## Each configuration is represented as a dataclass, which provides a clear structure for the parameters needed in each step of the machine learning pipeline.
+
 from dataclasses import dataclass
 from pathlib import Path
 
