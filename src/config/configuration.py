@@ -6,7 +6,8 @@ from src.logger import logging
 from src.exception import AppException
 from src.utils import read_yaml, create_directories
 from src.constant.constants import *
-from src.entity.config_entity import DataIngestionConfig, DataValidationConfig, DataTransformationConfig, ModelTrainerConfig
+from src.entity.config_entity import (DataIngestionConfig, DataValidationConfig, DataTransformationConfig, 
+                                      ModelTrainerConfig, RecommendationConfig)
 
 class AppConfiguration:
     def __init__(self, 
@@ -158,4 +159,34 @@ class AppConfiguration:
 
         except Exception as e:
             logging.error(f"Error while creating Model Trainer Configuration: {e}", exc_info=True)
+            raise AppException(e, sys)
+        
+
+    def recommendation_config(self) -> RecommendationConfig:
+        try:
+            recommendation_config = self.config.recommendation_config
+            transformation_config = self.config.transformation_config
+            trainer_config = self.config.model_trainer
+            
+            trained_model = trainer_config.trained_model
+            poster_api = recommendation_config['poster_api_url']
+            
+            book_names_obj_path = Path(transformation_config.root_dir, "book_names.pkl")
+            books_pivot_table_obj_path = Path(transformation_config.root_dir, "books_pivot_table.pkl")
+            final_ratings_obj_path = Path(transformation_config.root_dir, "final_rating.pkl")
+
+            trained_model_path = Path(trainer_config.root_dir, trained_model)
+          
+            recommendation_configuration = RecommendationConfig(
+                book_names_obj_path = book_names_obj_path,
+                books_pivot_table_obj_path = books_pivot_table_obj_path,
+                final_ratings_obj_path = final_ratings_obj_path,
+                trained_model_path = trained_model_path
+            )
+
+            logging.info(f"Recommendation Configuration creation successfull")
+            return recommendation_configuration
+
+        except Exception as e:
+            logging.error(f"Error while creating Recommendation Configuration: {e}", exc_info=True)
             raise AppException(e, sys)

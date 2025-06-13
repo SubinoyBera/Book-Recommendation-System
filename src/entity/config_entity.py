@@ -1,4 +1,4 @@
-## This module defines configuration entities for data ingestion, validation, transformation, and model training.
+## This module defines configuration entities
 ## Each configuration is represented as a dataclass, which provides a clear structure for the parameters needed in each step of the machine learning pipeline.
 
 from dataclasses import dataclass
@@ -10,7 +10,6 @@ class DataIngestionConfig:
     raw_data_dir: Path
     ingested_dir: Path
 
-
 @dataclass(frozen=True)
 class DataValidationConfig:
     valid_data_dir: Path
@@ -20,16 +19,21 @@ class DataValidationConfig:
     ratings_schema: dict
     STATUS_FILE: Path
 
-
 @dataclass(frozen=True)
 class DataTransformationConfig:
     transformation_dir: Path
     books_data_path: Path
     ratings_data_path: Path
 
-
 @dataclass(frozen=True)
 class ModelTrainerConfig:
     trained_model_dir: Path
     books_pivot_table_path : Path
     model_name: str
+
+@dataclass(frozen=True)
+class RecommendationConfig:
+    book_names_obj_path: Path
+    books_pivot_table_obj_path: Path
+    final_ratings_obj_path: Path
+    trained_model_path: Path

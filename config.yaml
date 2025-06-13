@@ -22,3 +22,6 @@ model_trainer:
   root_dir: artifacts/ML_model
   books_pivot_table: books_pivot_table.pkl
   trained_model: model.pkl
+
+recommendation_config:
+  poster_api_url: https://api.themoviedb.org/3/movie/{}?api_key=8265bd1679663a7ea12ac168da84d2e8&language=en-US
