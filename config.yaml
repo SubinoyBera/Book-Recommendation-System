@@ -20,4 +20,5 @@ data_transformation:
 
 model_trainer:
   root_dir: artifacts/ML_model
+  books_pivot_table: books_pivot_table.pkl
   trained_model: model.pkl

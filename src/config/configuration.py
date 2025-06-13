@@ -21,7 +21,7 @@ class AppConfiguration:
             self.schema = read_yaml(config_schemapath)
 
         except Exception as e:
-            logging.info(f"Failed to load configuration: {e}")
+            logging.error(f"Failed to load configuration: {e}", exc_info=True)
             raise AppException(e, sys)
 
     
@@ -47,11 +47,11 @@ class AppConfiguration:
                 ingested_dir = ingestion_data_dir
             )
 
-            logging.info(f"Data Ingestion Configuration successfull")
+            logging.info("Data Ingestion Configuration creation successfull")
             return ingestion_configuration
 
         except Exception as e:
-            logging.info(f"Error in Data Ingestion Configuration: {e}")
+            logging.error(f"Error while creating Data Ingestion Configuration: {e}", exc_info=True)
             raise AppException(e, sys)
 
 
@@ -88,11 +88,11 @@ class AppConfiguration:
                 STATUS_FILE = STATUS_FILE_PATH
             )
 
-            logging.info(f"Data Validation process Configuration successfull")
+            logging.info("Data Validation process Configuration creation successfull")
             return validation_configuration
 
         except Exception as e:
-            logging.info(f"Error in Data Validation process Configuration: {e}")
+            logging.error(f"Error while creating Data Validation process Configuration: {e}", exc_info=True)
             raise AppException(e, sys)
         
 
@@ -120,33 +120,40 @@ class AppConfiguration:
                 ratings_data_path = ratings_data_path,
             )
 
+            logging.info("Data Transformation Configuration creation successfull")
             return transformation_configiguration
 
         except Exception as e:
-            logging.info(f"Error in Data Validation process Configuration: {e}")
+            logging.error(f"Error while creating Data Transformation Configuration: {e}", exc_info=True)
             raise AppException(e, sys)
         
 
-    def model_trainer_config(self):
+    def model_trainer_config(self) -> ModelTrainerConfig:
         """
         Creates the configuration for Model Training 
         Returns: ModelTrainerConfig object
         """
         try:
             trainer_config = self.config.model_trainer
+            transformation_config = self.config.data_transformation
 
             create_directories(trainer_config.root_dir)
 
             trained_model_dir = Path(trainer_config.root_dir)
             trained_model = trainer_config.trained_model
+            books_pivot_table = trainer_config.books_pivot_table
+
+            books_pivot_table_path = Path(transformation_config.root_dir, books_pivot_table)
 
             training_configuration = ModelTrainerConfig(
                 trained_model_dir = trained_model_dir,
+                books_pivot_table_path = books_pivot_table_path,
                 model_name = trained_model
             )
 
+            logging.info("Model Trainer Configuration creation successfull")
             return training_configuration
 
         except Exception as e:
-            logging.error(f"Error in Model Training Configuration: {e}")
+            logging.error(f"Error while creating Model Trainer Configuration: {e}", exc_info=True)
             raise AppException(e, sys)

@@ -28,4 +28,5 @@ class DataTransformationConfig:
 @dataclass(frozen=True)
 class ModelTrainerConfig:
     trained_model_dir: Path
+    books_pivot_table_path : Path
     model_name: str
