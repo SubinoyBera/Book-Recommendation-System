@@ -14,12 +14,12 @@ class DataIngestion:
         data_ingestion_config: DataIngestionConfig 
         """
         try:
-            logging.info(f"{'='*20}Data Ingestion log started.{'='*20} ")
+            logging.info(f"{'='*20}Data Ingestion log started.{'='*20}")
             self.data_ingestion_config = app_config.data_ingestion_config()
 
         except Exception as e:
-            error_message = f"Data Ingestion error: {e}"
-            raise AppException(Exception(error_message), sys)
+            logging.error(f"Data Ingestion error: {e}", exc_info=True)
+            raise AppException(e, sys)
 
     
     def download_data(self):
@@ -47,8 +47,8 @@ class DataIngestion:
             return zip_file_path
 
         except Exception as e:
-            error_message = f"Failed to download data: {e}"
-            raise AppException(Exception(error_message), sys)
+            logging.error(f"Failed to download data: {e}", exc_info=True)
+            raise AppException(e, sys)
 
 
     def extract_zip_file(self, zip_file_path : str):
@@ -66,8 +66,8 @@ class DataIngestion:
             logging.info(f"Extracting zip file: {zip_file_path} into dir: {ingested_dir}")
 
         except Exception as e:
-            error_message = f"Failed to extract Zip file: {e}"
-            raise AppException(Exception(error_message), sys)
+            logging.error(f"Failed to extract Zip file: {e}", exc_info=True)
+            raise AppException(e, sys)
 
 
     def initiate_data_ingestion(self):
@@ -84,5 +84,5 @@ class DataIngestion:
             logging.info(f"{'='*20}Data Ingestion Completed Successfully.{'='*20} \n\n")
         
         except Exception as e:
-            error_message = f"Error in Data Ingestion process: {e}"
-            raise AppException(Exception(error_message), sys)
+            logging.error(f"Error in Data Ingestion process: {e}", exc_info=True)
+            raise AppException(e, sys)

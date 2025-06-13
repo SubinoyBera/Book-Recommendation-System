@@ -17,11 +17,11 @@ class DataTransformation:
             for data validation.
         """
         try:
-            logging.info(f"{'='*20}Data Transformation log started.{'='*20} ")
+            logging.info(f"{'='*20}Data Transformation log started.{'='*20}")
             self.data_transformation_config = config.data_transformation_config
 
         except Exception as e:
-            logging.error(f"Data validation Configuration initialization error: {e}")
+            logging.error(f"Data validation Configuration initialization error: {e}", exc_info=True)
             raise AppException(e, sys)
         
 
@@ -81,11 +81,11 @@ class DataTransformation:
                 pickle.dump(final_ratings, open(self.data_transformation_config.transformation_root/"final_ratings.pkl", "wb"))
 
             except Exception as e:
-                logging.error(f"Failed to save the transformed objects: {e}")
+                logging.error(f"Failed to save the transformed objects: {e}", exc_info=True)
                 raise AppException(e, sys)
             
         except Exception as e:
-            logging.error(f"Data Transformation operation failed: {e}")
+            logging.error(f"Data Transformation operation failed: {e}", exc_info=True)
             raise AppException(e, sys)
 
 
@@ -104,5 +104,5 @@ class DataTransformation:
             logging.info(f"{'='*20}Data Transformation Completed Successfully.{'='*20} \n\n")
         
         except Exception as e:
-            logging.error(f"Dataset Transformation error: {e}")
+            logging.error(f"Dataset Transformation error: {e}", exc_info=True)
             raise AppException(e, sys)
