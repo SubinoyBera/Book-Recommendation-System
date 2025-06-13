@@ -27,8 +27,10 @@ files_list = [
     "src/utils.py",
     "src/exception.py",
     "notebooks/test.ipynb",
+    "templates/index.html",
+    "templates/recommend.html",
     "Dockerfile",
-    ".dockerignore"
+    ".dockerignore",
     "main.py",
     "app.py",
     "setup.py",
