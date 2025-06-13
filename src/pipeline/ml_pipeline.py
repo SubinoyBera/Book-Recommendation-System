@@ -1,3 +1,5 @@
+# This file implements the main ML Pipeline that orchestrates the various stages of the machine learning process.
+# Includes data ingestion, validation, transformation, and model training.
 import sys
 from src.logger import logging
 from src.exception import AppException
@@ -18,7 +20,8 @@ class MLPipeline:
     
     def main(self):
         """
-        Initiates the Machine Learning Pipeline which involves stages like Data Ingestion, Data Validation, Data Transformation and Model Training.
+        Initiates the Machine Learning Pipeline which involves stages like Data Ingestion, Data Validation,
+        Data Transformation and Model Training.
 
         Raises:
             AppException: If any stage of the pipeline fails
@@ -45,8 +48,8 @@ if __name__=='__main__':
         logging.info("ML Pipeline started")
         obj = MLPipeline()
         obj.main()
-        logging.info("ML Pipeline completed successfully.")
+        logging.info("ML Pipeline completed")
         
     except Exception as e:
-        logging.error(f"ML pipeline terminated: {e}", exc_info=True)
+        logging.error(f"ML Pipeline Terminated: {e}", exc_info=True)
         raise AppException(e, sys)
