@@ -5,13 +5,13 @@ from pathlib import Path
 from src.logger import logging
 from src.exception import AppException
 from src.utils import read_yaml, create_directories
-from constant.constants import *
+from src.constant.constants import *
 from src.entity.config_entity import DataIngestionConfig, DataValidationConfig, DataTransformationConfig, ModelTrainerConfig
 
 class AppConfiguration:
     def __init__(self, 
-                 config_filepath : str = CONFIG_FILE_PATH,
-                 config_schemapath : str = SCHEMA_FILE_PATH):
+                config_filepath : Path = CONFIG_FILE_PATH,
+                config_schemapath : Path = SCHEMA_FILE_PATH):
         """
         Initializes the configuration object by reading configuration from config.yaml file..
 
