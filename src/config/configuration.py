@@ -162,10 +162,10 @@ class AppConfiguration:
             raise AppException(e, sys)
         
 
-    def recommendation_config(self) -> RecommendationConfig:
+    def ml_recommendation_config(self) -> RecommendationConfig:
         try:
             recommendation_config = self.config.recommendation_config
-            transformation_config = self.config.transformation_config
+            transformation_config = self.config.data_transformation
             trainer_config = self.config.model_trainer
             
             trained_model = trainer_config.trained_model
@@ -190,3 +190,10 @@ class AppConfiguration:
         except Exception as e:
             logging.error(f"Error while creating Recommendation Configuration: {e}", exc_info=True)
             raise AppException(e, sys)
+        
+
+    def semantic_recommender_config(self):
+        try:
+            recommender_config = self.config.semantic_recommender
+            # vectorstore url
+            # return path for the downloaded chroma vectorstore

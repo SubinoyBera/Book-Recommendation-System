@@ -45,8 +45,8 @@ class DataTransformation:
         """
         try:
             logging.info("Data Transformation operation started")
-            books = pd.read_csv(self.data_transformation_config.books_data_path)
-            ratings = pd.read_csv(self.data_transformation_config.ratings_data_path)
+            books = pd.read_csv(self.data_transformation_config.books_data_path, sep=";", encoding="iso8859", on_bad_lines="skip")
+            ratings = pd.read_csv(self.data_transformation_config.ratings_data_path, sep=";", encoding="iso8859", on_bad_lines="skip")
 
             books["Title"] = books["Title"].apply(html.unescape)
             books['Title'] = books["Title"].str.replace(r"\\'", "'", regex=True)

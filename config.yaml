@@ -23,5 +23,11 @@ model_trainer:
   books_pivot_table: books_pivot_table.pkl
   trained_model: model.pkl
 
+semantic_recommender:
+  root_dir: artifacts/semantic_recommender
+  semantic_books_dataset: final_book_dataset.pkl
+  vectorstore_url: -------
+  chroma_dir: artifacts/vector_embeddings/books_vectorstore
+
 recommendation_config:
   poster_api_url: https://api.themoviedb.org/3/movie/{}?api_key=8265bd1679663a7ea12ac168da84d2e8&language=en-US
