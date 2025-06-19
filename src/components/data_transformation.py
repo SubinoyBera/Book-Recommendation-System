@@ -76,9 +76,9 @@ class DataTransformation:
 
             try:
                 logging.info("Saving the transformed objects as pickle file")
-                pickle.dump(books_pt, open(self.data_transformation_config.transformation_root/"books_pivot_table.pkl", "wb"))
-                pickle.dump(book_names, open(self.data_transformation_config.transformation_root/"book_names.pkl", "wb"))
-                pickle.dump(final_ratings, open(self.data_transformation_config.transformation_root/"final_ratings.pkl", "wb"))
+                pickle.dump(books_pt, open(self.data_transformation_config.serialized_obj_dir/"books_pivot_table.pkl", "wb"))
+                pickle.dump(final_ratings, open(self.data_transformation_config.serialized_obj_dir/"final_ratings.pkl", "wb"))
+                pickle.dump(book_names, open(self.data_transformation_config.common_obj_dir/"book_names.pkl", "wb"))
 
             except Exception as e:
                 logging.error(f"Failed to save the transformed objects: {e}", exc_info=True)

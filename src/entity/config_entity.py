@@ -22,6 +22,8 @@ class DataValidationConfig:
 @dataclass(frozen=True)
 class DataTransformationConfig:
     transformation_dir: Path
+    serialized_obj_dir: Path
+    common_obj_dir: Path
     books_data_path: Path
     ratings_data_path: Path
 
@@ -32,8 +34,14 @@ class ModelTrainerConfig:
     model_name: str
 
 @dataclass(frozen=True)
-class RecommendationConfig:
+class MLRecommendationConfig:
+    serialized_obj_dir: Path
     book_names_obj_path: Path
     books_pivot_table_obj_path: Path
     final_ratings_obj_path: Path
     trained_model_path: Path
+
+@dataclass(frozen=True)
+class SemanticRecommendationConfig:
+    final_books_obj_path: Path
+    chroma_persist_dir: Path

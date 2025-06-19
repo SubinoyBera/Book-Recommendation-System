@@ -7,7 +7,7 @@ from src.exception import AppException
 from src.utils import read_yaml, create_directories
 from src.constant.constants import *
 from src.entity.config_entity import (DataIngestionConfig, DataValidationConfig, DataTransformationConfig, 
-                                      ModelTrainerConfig, RecommendationConfig)
+                                      ModelTrainerConfig, MLRecommendationConfig, SemanticRecommendationConfig)
 
 class AppConfiguration:
     def __init__(self, 
@@ -109,16 +109,22 @@ class AppConfiguration:
             validation_config = self.config.data_validation
 
             create_directories(transformation_config.root_dir)
+            create_directories(transformation_config.serialized_obj_dir)
+            create_directories(transformation_config.common_obj_dir)
             
             books_data = transformation_config.valid_books_dataset
             ratings_data = transformation_config.valid_ratings_dataset
 
             transformation_root_dir = Path(transformation_config.root_dir)
+            serialized_obj_dir = Path(transformation_config.serialized_obj_dir)
+            common_obj_dir = Path(transformation_config.common_obj_dir)
             books_data_path = Path(validation_config.root_dir, validation_config.valid_data_dir, books_data)
             ratings_data_path = Path(validation_config.root_dir, validation_config.valid_data_dir, ratings_data)
 
             transformation_configiguration = DataTransformationConfig(
                 transformation_dir = transformation_root_dir,
+                serialized_obj_dir = serialized_obj_dir,
+                common_obj_dir = common_obj_dir,
                 books_data_path = books_data_path,
                 ratings_data_path = ratings_data_path,
             )
@@ -146,7 +152,7 @@ class AppConfiguration:
             trained_model = trainer_config.trained_model
             books_pivot_table = trainer_config.books_pivot_table
 
-            books_pivot_table_path = Path(transformation_config.root_dir, books_pivot_table)
+            books_pivot_table_path = Path(transformation_config.serialized_obj_dir, books_pivot_table)
 
             training_configuration = ModelTrainerConfig(
                 trained_model_dir = trained_model_dir,
@@ -162,38 +168,57 @@ class AppConfiguration:
             raise AppException(e, sys)
         
 
-    def ml_recommendation_config(self) -> RecommendationConfig:
+    def ml_recommendation_config(self) -> MLRecommendationConfig:
+        """
+        Creates the configuration for ML Recommender 
+        Returns: MLRecommendationConfig object
+        """
         try:
-            recommendation_config = self.config.recommendation_config
-            transformation_config = self.config.data_transformation
-            trainer_config = self.config.model_trainer
+            recommender_config = self.config.ml_recommender
+            serialized_obj_dir = recommender_config.serialized_obj_dir
+            common_obj_dir = recommender_config.common_obj_dir
             
-            trained_model = trainer_config.trained_model
-            poster_api = recommendation_config['poster_api_url']
-            
-            book_names_obj_path = Path(transformation_config.root_dir, "book_names.pkl")
-            books_pivot_table_obj_path = Path(transformation_config.root_dir, "books_pivot_table.pkl")
-            final_ratings_obj_path = Path(transformation_config.root_dir, "final_rating.pkl")
+            book_names_obj_path = Path(common_obj_dir, "book_names.pkl")
+            books_pivot_table_obj_path = Path(serialized_obj_dir, "books_pivot_table.pkl")
+            final_ratings_obj_path = Path(serialized_obj_dir, "books_final_ratings.pkl")
 
-            trained_model_path = Path(trainer_config.root_dir, trained_model)
+            trained_model_path = Path(recommender_config.trained_model_dir, "model.pkl")
           
-            recommendation_configuration = RecommendationConfig(
+            ml_recommendation_configuration = MLRecommendationConfig(
+                serialized_obj_dir = serialized_obj_dir,
                 book_names_obj_path = book_names_obj_path,
                 books_pivot_table_obj_path = books_pivot_table_obj_path,
                 final_ratings_obj_path = final_ratings_obj_path,
                 trained_model_path = trained_model_path
             )
 
-            logging.info(f"Recommendation Configuration creation successfull")
-            return recommendation_configuration
+            logging.info(f"ML-Recommender Configuration creation successfull")
+            return ml_recommendation_configuration
 
         except Exception as e:
-            logging.error(f"Error while creating Recommendation Configuration: {e}", exc_info=True)
+            logging.error(f"Error while creating ML-Recommender Configuration: {e}", exc_info=True)
             raise AppException(e, sys)
         
 
-    def semantic_recommender_config(self):
+    def semantic_recommender_config(self) -> SemanticRecommendationConfig:
+        """
+        Creates the configuration for Semantic Recommender 
+        Returns: SemanticRecommendationConfig object
+        """
         try:
             recommender_config = self.config.semantic_recommender
-            # vectorstore url
-            # return path for the downloaded chroma vectorstore
+        
+            vectorstore_dir = Path(recommender_config.root_dir, recommender_config.vectorstore)
+            books_obj_path = Path(recommender_config.root_dir, recommender_config.semantic_books_dataset)
+
+            sm_recommendation_configuration =  SemanticRecommendationConfig(
+                final_books_obj_path = books_obj_path,
+                chroma_persist_dir = vectorstore_dir
+            )
+
+            logging.info(f"Semantic Recommender Configuration creation successfull")
+            return sm_recommendation_configuration
+        
+        except Exception as e:
+            logging.error(f"Error while creating Semantic Recommender Configuration: {e}", exc_info=True)
+            raise AppException(e, sys)

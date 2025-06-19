@@ -1,8 +1,9 @@
+# Book Recommender System Application
 import os
 import sys
 import pickle
-import requests
-import zipfile
+import shutil
+from pathlib import Path
 
 import numpy as np
 import streamlit as st
@@ -13,33 +14,29 @@ from src.exception import AppException
 
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_chroma import Chroma
+from pydantic import SecretStr
 from dotenv import load_dotenv
-
 load_dotenv()
-api_key = os.getenv("GOOGLE_API_KEY")
-
-embedding = GoogleGenerativeAIEmbeddings(
-    model="models/text-embedding-004",
-    google_api_key=api_key,
-)
 
 class MLRecommender:
     def __init__(self, app_config = AppConfiguration()):        
         """
-        Initializes the Recommendation object.
+        Initializes the MLRecommendation object.
         Args:
-            app_config (AppConfiguration): The configuration object containing the recommendation settings.
+            app_config (AppConfiguration): The configuration object containing the ml-recommendation settings.
 
         Loads the trained model, final ratings, and books pivot table if the trained model path exists.
         """
         try:
-            self.recommend_config = app_config.ml_recommendation_config()
+            self.ml_recommend_config = app_config.ml_recommendation_config()
 
-            # check if ml model is available
-            if self.recommend_config.trained_model_path.exists():
-                self.model = pickle.load(open(self.recommend_config.trained_model_path, "rb"))
-                self.final_ratings = pickle.load(open(self.recommend_config.final_ratings_obj_path, "rb"))
-                self.books_pivot_table = pickle.load(open(self.recommend_config.books_pivot_table_obj_path, "rb"))
+            # check if ml model and serialized objects is available then load
+            if os.path.exists(self.ml_recommend_config.trained_model_path) & os.path.exists(self.ml_recommend_config.serialized_obj_dir):
+                self.model = pickle.load(open(self.ml_recommend_config.trained_model_path, "rb"))
+                self.final_ratings = pickle.load(open(self.ml_recommend_config.final_ratings_obj_path, "rb"))
+                self.books_pivot_table = pickle.load(open(self.ml_recommend_config.books_pivot_table_obj_path, "rb"))
+            else:
+                self.objects_loaded = 0
 
         except Exception as e:
             logging.error(f"Failed to initialize Recommendation Congiguration: {e}", exc_info=True)
@@ -51,11 +48,21 @@ class MLRecommender:
         This method is used to train the recommendation model.
         It initializes the ML pipeline and trains the model.
         """
+        flag = 0
+        dirs = ["artifacts/data_ingestion", "artifacts/data_validation", "artifacts/data_transformation",
+                    "artifacts/serialized_objects", "artifacts/common_objects", "artifacts/ML_model"]
+        for dir in dirs:
+            if os.path.exists(Path(dir)):
+                shutil.rmtree(dir)
+
         try:
             logging.info("Training Recommender System Started")
             pipeline = MLPipeline()
             pipeline.main()
             logging.info("Recommender System successfully trained.")
+
+            flag = 1
+            return flag
 
         except Exception as e:
             logging.error(f"Failed to train recommender system: {e}", exc_info=True)
@@ -77,16 +84,16 @@ class MLRecommender:
             logging.info("Fetching poster images for recommended books.")
             for book_id in suggestion:
                 book_names.append(self.books_pivot_table.index[book_id])
-
+            
             for book in book_names[0]:
                 ids = np.where(self.final_ratings["Title"] == book)[0][0]
                 ids_index.append(ids)
 
             for id in ids_index:
                 url = self.final_ratings.iloc[id]["image_url"]
-                if url is None or url == "nan":
-                    logging.warning(f"No poster url found for book ID {id}")
-                    url = "https://developers.google.com/static/maps/documentation/streetview/images/error-image-generic.png"
+                if type(url) is float:
+                    logging.warning(f"No poster url found for book ID {id}, using default image")
+                    url = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTgVr8P6ExMHCBQEiGITlb89tDlY878ROSfQH-JVVdCTJNHCk9EjKESYuy6-R2x9Qg3ptw&usqp=CAU"
                     
                 poster_url.append(url)
             
@@ -139,6 +146,7 @@ class MLRecommender:
             selected_book (str): The name of the book for which recommendations are needed.
         """
         try:
+            logging.info("ML-Recommender Engine Started.")
             recommended_books, poster_url = self.recommend(selected_book)
             col1, col2, col3, col4, col5 = st.columns(5)
             with col1:
@@ -156,6 +164,7 @@ class MLRecommender:
             with col5:
                 st.image(poster_url[5])
                 st.text(recommended_books[5])
+            logging.info("Recommender Engine successfully provided recommendations.")
 
         except Exception as e:
             logging.error(f"ML Recommendation engine failure: {e}", exc_info=True)
@@ -163,105 +172,160 @@ class MLRecommender:
 
 
 class SemanticRecommender:
-    def __init__(self, app_config = AppConfiguration()):
-        try:
-            self.recommend_config = app_config.semantic_recommender_config()
+    def __init__(self, app_config = AppConfiguration()):        
+        """
+        Initializes the SemanticRecommender object.
+        Loads the pre-computed Chroma vector store and the final books data object. 
+        Also loads the Google Generative AI embeddings model.
 
-            self.books_data = pickle.load(open("final_books_dataset", "rb"))
-            
+        Args:
+            app_config (AppConfiguration): The configuration object containing the configuration for semantic recommendation.
+        """
+        try:
+            api_key = os.getenv("GOOGLE_API_KEY")
+
+            self.embedding = GoogleGenerativeAIEmbeddings(model = "models/text-embedding-004",
+                                                    google_api_key = SecretStr(api_key) if api_key is not None else None)
+
+            recommend_config = app_config.semantic_recommender_config()
+
+            self.books_data = pickle.load(open(recommend_config.final_books_obj_path, "rb"))
+            self.chroma_persist_dir = recommend_config.chroma_persist_dir
 
         except Exception as e:
-            logging.error(f"Recommendation engine failure: {e}", exc_info=True)
+            logging.error(f"Semantic Recommender class initialization failed: {e}", exc_info=True)
             raise AppException(e, sys)
         
     
     def semmantic_recommend(self, query):
+        """
+        Performs a semantic search for relevant books based on description provided.
+        Args:
+            query (str): The search query describing the type of books to find.
+
+        Returns:
+            tuple: A tuple containing:
+                - books (list): A list of book titles that match the query.
+                - posters_url (list): A list of URLs for the poster images of the matching books.
+        """
         book_ids = []
         books = []
         posters_url = []
-        db_books = Chroma(persist_directory = "chroma",
-                          embedding_function = embedding)
         
-        results = db_books.similarity_search(query, k=8)
-        
-        for i, doc in enumerate(results, 1):
-            book_ids.append(doc.page_content.split()[0].replace(':', '').strip())
-        
-        for i in book_ids:
-            if i[0] == '"':
-                i.replace('"', '')
-            id_int = int(i)
-            index = np.where(self.books_data["isbn13"] == id_int)[0][0]
-            title = self.books_data["title"].iloc[index]
-            thumbnail = self.books_data["thumbnail"].iloc[index]
+        logging.info(f"Searching for books based on semantics of the description provided.")
+        try:
+            db_books = Chroma(persist_directory = str(self.chroma_persist_dir),
+                              embedding_function = self.embedding)
 
-            books.append(title)
-            posters_url.append(thumbnail)
+            results = db_books.similarity_search(query, k=8)
 
-        return books, posters_url
+            for i, doc in enumerate(results, 1):
+                book_ids.append(doc.page_content.split()[0].replace(':', '').strip())
+
+            for i in book_ids:
+                if i[0] == '"':
+                    i = i.replace('"', '')
+                id_int = int(i)
+                index = np.where(self.books_data["isbn13"] == id_int)[0][0]
+                title = self.books_data["title"].iloc[index]
+                books.append(title)
+
+                thumbnail_url = self.books_data["thumbnail"].iloc[index]
+                if type(thumbnail_url) is float:
+                        logging.warning(f"No poster url found for book ID {index}, using default image")
+                        thumbnail_url = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTgVr8P6ExMHCBQEiGITlb89tDlY878ROSfQH-JVVdCTJNHCk9EjKESYuy6-R2x9Qg3ptw&usqp=CAU"
+
+                posters_url.append(thumbnail_url)
+
+            logging.info(f"Recommended books and poster image urls fetched successfully.")
+            return books, posters_url
+        
+        except Exception as e:
+            logging.error(f"Embedding model failed to recommend books and or couldn't get poster image urls: {e}", exc_info=True)
+            raise AppException(e, sys)
     
 
-    def semantic_recommendation_engine(self):
+    def semantic_recommendation_engine(self, book_desc):
+        """
+        Displays the recommended books and their poster images based on a given book description.
+        This method uses the `semantic_recommend` method to get recommendations and then displays them in a Streamlit app.
+
+        Args:
+            book_desc (str): The description of the book for which recommendations are needed.
+        """
         try:
-            recommended_books, poster_urls = self.semmantic_recommend(selected_book)
+            logging.info("Semantic Recommender Engine Started.")
+            recommended_books, poster_urls = self.semmantic_recommend(book_desc)
             
             for i in range(0, len(poster_urls), 4):
                 cols = st.columns(4)
                 for j in range(4):
                     if i+j < len(poster_urls):
                         with cols[j]:
-                            st.image(poster_urls[i+j], caption = recommended_books[i+j], use_column_width=True)
+                            st.image(poster_urls[i+j])
+                            st.markdown(f"**{recommended_books[i+j]}**")
+            
+            logging.info("Recommender Engine successfully provided recommendations.")
 
         except Exception as e:
             logging.error(f"Semantic Recommendation engine failure: {e}", exc_info=True)
             raise AppException(e, sys)
 
 
-
-
-
-
-
-
-
-
-
-
-# Streamlit application for the Book Recommender System
-# This application allows users to train the recommender system and get book recommendations based on a selected book
+# Book Recommender System Application using Streamlit
+# This application provides a user interface for book recommendations using either a Machine Learning or Semantic approach.
 if __name__ == "__main__":
     st.set_page_config(page_title = "Book Recommendation System", layout = "wide")
-
-    st.sidebar.title("Recommender Options")
-    option = st.sidebar.selectbox("Select Recommender Type :",
-                            ["ML-based Recommender",
-                             "LLM Semantic Recommender"]
+    
+    # Set sidebar title and options
+    st.sidebar.title("Options ~")
+    option = st.sidebar.selectbox("Please Choose Recommender Type :",
+                            ["ML Recommender",
+                             "Semantic Recommender"]
     )
 
-    for _ in range(23):
+    for _ in range(21):
         st.sidebar.write("")
 
-    st.sidebar.markdown("**>>> Developed by SUBINOY BERA**")
-    st.sidebar.markdown("Thank You!! 🙏")
+    st.sidebar.markdown("**--->>> Developed and Engineered by SUBINOY BERA**")
+    st.sidebar.markdown("Thank You!! 😀🙏")
     
-
-    if option == "ML-based Recommender":
-        st.header("Book Recommender System")
-        st.text("Collaborative filtering based recommendation system!")
+    # ML Recommender System
+    if option == "ML Recommender":
+        st.header("ML Book Recommender System 📚🎓")
+        st.text("--  ↗️ Collaborative Filtering based End to End Machine Learning book recommendation system!!")
 
         obj = MLRecommender()
 
         if st.button("Train Recommender System"):
-            obj.train_engine()
+            st.text("# Training Recommender System Started.\n Please Wait....")
+            flag = obj.train_engine()
+            if flag == 1:
+                st.success("Recommender System Successfully Trained!!")
+            else:
+                st.error("Failed to train Recommender System: Error occured during training. Please reload application and try again.")
 
-        book_names_obj_path = obj.recommend_config.book_names_obj_path
-        book_names = pickle.load(open("artifacts/book_names.pkl", "rb"))          #pickle.load(open(book_names_obj_path, "rb"))
-        selected_book = st.selectbox("Type or Select books from the dropdown...",
+        book_names_obj_path = obj.ml_recommend_config.book_names_obj_path
+        book_names = pickle.load(open(book_names_obj_path, "rb"))
+        selected_book = st.selectbox("Type or Select book from the dropdown to get recommendation :",
                                     book_names)
 
         if st.button("Show Recommendations"):
-            obj.ml_recommendation_engine(selected_book)
+            if obj.objects_loaded == 0:
+                st.error("Sorry!! No Recommendation Model found and or other required file objects not found. Please train the Recommender System.")
+            else:
+                obj.ml_recommendation_engine(selected_book)
 
-
+    # Semantic Recommender System
     if option == "Semantic Recommender":
-        st.header("Semantic Book Recommender System")
+        st.header("Semantic Book Recommender System 📝🔍")
+        st.text("--  ⚙️ Uses Google Embedding model and Vector Similarity Search to give book recommendations based on the description!!")
+
+        book_desc = st.text_input("Please write book description...")
+
+        if st.button("Show Recommendations"):
+            if not book_desc:
+                st.error("Sorry! Please write a book description in the input-box to provide recommendations.")
+            else:
+                obj = SemanticRecommender()
+                obj.semantic_recommendation_engine(book_desc)
