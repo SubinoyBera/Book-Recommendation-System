@@ -222,3 +222,4 @@ class AppConfiguration:
         except Exception as e:
             logging.error(f"Error while creating Semantic Recommender Configuration: {e}", exc_info=True)
             raise AppException(e, sys)
+        
