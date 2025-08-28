@@ -20,7 +20,8 @@ This project is a machine learning based collaborative-filtering book recommenda
   * Uses Google Embedding-model to generate the dense-vector embeddings of the query for getting the semantic meaning.
   * Performs similarity search in the ChromaDB vector store to retrieve the most similar books and recommends to you.
 
-- Also provides you the option for re-training of the ML model on the existing dataset in case if some unexpected happens! 
+- Also provides you the option for re-training of the ML model on the existing dataset in case if some unexpected happens!
+<hr>
 
 ### 🔗 App Link : <a href="https://book-recommendation-system-634y.onrender.com">Book Recommendation System</a> ↗️
 📍 **NOTE :** <i>The app is deployed on free web service - so the model training feature often raises error due to running out of memory. Also it cause latency issues and prediction delays.For best experience follow the installation steps and run the app locally on your device.</i><br>
