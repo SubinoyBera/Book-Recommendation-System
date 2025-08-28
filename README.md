@@ -22,6 +22,10 @@ This project is a machine learning based collaborative-filtering book recommenda
 
 - Also provides you the option for re-training of the ML model on the existing dataset in case if some unexpected happens! 
 
+### 🔗 App Link : <a href="https://book-recommendation-system-634y.onrender.com">Book Recommendation System</a> ↗️
+📍 **NOTE :** <i>The app is deployed on free web service - so the model training feature often raises error due to running out of memory. Also it cause latency issues and prediction delays.For best experience follow the installation steps and run the app locally on your device.</i><br>
+ <b>This entire application has been developed using open source tools and free available servives!</b>🙏
+
 
 ## 🛠️ Tech Stack
 <ul>
@@ -45,23 +49,23 @@ This project is a machine learning based collaborative-filtering book recommenda
 <br>
 
 
-## 🚀 Get Started
+## ⚙️ Installation 
 
-<b>STEP: 01 - Clone the repository</b>
+STEP: 01 - Clone the repository
 
 ```bash
 git clone https://github.com/SubinoyBera/Book-Recommender-System
 cd Book-Recommender-System
 ```
 
-<b>STEP: 02 - Create and activate conda evironment</b>
+STEP: 02 - Create and activate conda evironment
 
 ```bash
 conda create -p venv python=3.11.5 -y
 conda activate venv
 ```
 
-<b>STEP: 03 - Install project requirements</b>
+STEP: 03 - Install project requirements
 
 ```bash
 pip install -r requirements.txt
@@ -73,7 +77,7 @@ Create a file named `.env` in the root directory and add your Gemini API key:
 GOOGLE_API_KEY = your_google_gemini_api_key
 ```
 
-<b>STEP: 04 - Run the application</b>
+STEP: 04 - Run the application
 
 ```bash
 streamlit run app.py
@@ -82,12 +86,12 @@ Then open the local URL shown in your terminal (usually `http://localhost:8501`)
 <br>
 
 ### 📌 Contributing :
-Want to add new features or any improvement, fix bug, etc.. - Please feel free to contact and/or make a pull request. Looking forward for your contributions, suggestions and ideas! Your contibution can make a significant difference!!<br>
+Want to add new features or any improvement, fix bug, etc.. - Please feel free to contact and/or make a pull request. Looking forward for your contributions, suggestions and great ideas! Your contibution can make a significant difference!!<br>
 For any issues or problem while you find, please report it with proper details in the `issues` section.
 
 <br>
 
 <b>THANK YOU ! 🙏🎗️ </b>
 <br>
-*with regards : Subinoy Bera (author)* <br>
+*with regards : Subinoy Bera (developer)* <br>
 🧡🤍💚

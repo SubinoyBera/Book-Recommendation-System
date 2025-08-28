@@ -292,7 +292,7 @@ if __name__ == "__main__":
     # ML Recommender System
     if option == "ML Recommender":
         st.header("ML Book Recommender System 📚📖")
-        st.text("--  ↗️ Collaborative Filtering based End to End Machine Learning book recommendation system!!")
+        st.text("--  🔖 Collaborative Filtering based End to End Machine Learning book recommendation system!!")
 
         obj = MLRecommender()
 
