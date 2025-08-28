@@ -3,7 +3,7 @@
 Book Recommendation System is a type of information filtering system that suggests books to users besed on their reading preferences, interests and behaviour. Such recommender systems helps to create loyal customers, improves user experiences and increasing sales by recommending them relevant products & services for which they came to your site!
 
 This project is a machine learning based collaborative-filtering book recommendation system that leverges user behavior and preferences to suggest books to readers. The system also has AI feature to recommend relevant books from book description provided by user. Performed exploratory data analysis, developed end-to-end ML pipeline along with semantic search pipeline.
-<br>
+
 
 ## ⚡ Features
 - Provides options of two types of recommendation engines :-
@@ -21,7 +21,7 @@ This project is a machine learning based collaborative-filtering book recommenda
   * Performs similarity search in the ChromaDB vector store to retrieve the most similar books and recommends to you.
 
 - Also provides you the option for re-training of the ML model on the existing dataset in case if some unexpected happens! 
-<br>
+
 
 ## 🛠️ Tech Stack
 <ul>
@@ -81,7 +81,7 @@ streamlit run app.py
 Then open the local URL shown in your terminal (usually `http://localhost:8501`) in a browser.
 <br>
 
-## 📌 Contributing :
+### 📌 Contributing :
 Want to add new features or any improvement, fix bug, etc.. - Please feel free to contact and/or make a pull request. Looking forward for your contributions, suggestions and ideas! Your contibution can make a significant difference!!<br>
 For any issues or problem while you find, please report it with proper details in the `issues` section.
 
