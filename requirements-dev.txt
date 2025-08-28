@@ -8,16 +8,18 @@ requests==2.32.3
 tqdm==4.67.1
 kaggle==1.7.4.5
 kagglehub==0.3.12
-langchain==0.3.25
-langchain-core==0.3.62
-langchain-community==0.3.25
-langchain-google-genai==2.1.5
-langchain-chroma==0.2.0
+langchain==0.3.26
+langchain-core==0.3.68
+langchain-community==0.3.27
+langchain-google-genai==2.1.7
+langchain-chroma==0.2.4
 ipython==9.3.0
 ipykernel==6.29.5
-streamlit==1.45.1
 PyYAML==6.0.2
 ensure==1.0.4
 python-box==7.3.2
-python-dotenv==1.1.0
-pydantic==2.11.5
+python-dotenv==1.1.1
+pydantic==2.11.7
+streamlit=1.46.1
+
+-e .

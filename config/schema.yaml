@@ -1,0 +1,12 @@
+BOOKS_COLUMNS:
+  ISBN: int64
+  Title: str
+  Author: str
+  Year: int64
+  Publisher: str
+  image_url: str
+
+RATINGS_COLUMNS:
+  user_id: int64
+  ISBN: int64
+  rating: int64

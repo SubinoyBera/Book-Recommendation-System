@@ -1,8 +1,8 @@
 # This file implements the main ML Pipeline that orchestrates the various stages of the machine learning process.
 # Includes data ingestion, validation, transformation, and model training.
 import sys
-from src.logger import logging
-from src.exception import AppException
+from src.core.logger import logging
+from src.core.exception import AppException
 from src.components.data_ingestion import DataIngestion
 from src.components.data_validation import DataValidation
 from src.components.data_transformation import DataTransformation
@@ -27,7 +27,7 @@ class MLPipeline:
             AppException: If any stage of the pipeline fails
         """
         try:
-            logging.info("STAGE:1 Data Ingestion Stage Initiated")
+            logging.info("\n\n STAGE:1 Data Ingestion Stage Initiated")
             self.data_ingestion.initiate_data_ingestion()
 
             logging.info("STAGE:2 Data Validation Stage Initiated")

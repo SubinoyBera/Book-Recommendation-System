@@ -1,10 +1,10 @@
 import sys
 from pathlib import Path
 import pandas as pd
-from src.logger import logging
-from src.exception import AppException
+from src.core.logger import logging
+from src.core.exception import AppException
 from src.utils import create_directories
-from src.config.configuration import AppConfiguration
+from src.core.configuration import AppConfiguration
 
 def get_validation(columns, schema):
     """
@@ -34,7 +34,6 @@ class DataValidation:
             for data validation.
         """
         try:
-            logging.info(f"{'='*20}Data Validation log started.{'='*20} ")
             self.data_validation_config = app_config.data_validation_config()
 
         except Exception as e:
@@ -81,7 +80,7 @@ class DataValidation:
                        f.write(f"Validation Status: True")
 
                     logging.info("Datasets successsfully validated")
-                    create_directories(self.data_validation_config.valid_data_dir)
+                    create_directories([self.data_validation_config.valid_data_dir])
                     valid_books_dataset = "valid_books_dataset.csv"
                     valid_ratings_dataset = "valid_ratings_dataset.csv"
 
@@ -110,8 +109,10 @@ class DataValidation:
         - Raises an exception if the validation fails
         """
         try:
+            logging.info(f"{'='*20}Data Validation{'='*20}")
             self.validate_dataset()
-            logging.info(f"{'='*20}Data Validation Completed Successfully.{'='*20} \n\n")
+
+            logging.info(f"{'='*20}Data Validation Completed Successfully{'='*20} \n\n")
         
         except Exception as e:
             logging.error(f"Dataset Validation error: {e}")

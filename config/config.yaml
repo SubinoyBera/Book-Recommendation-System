@@ -1,0 +1,36 @@
+artifacts_root: artifacts
+
+data_ingestion:
+  root_dir: artifacts/data_ingestion
+  data_download_url: https://raw.githubusercontent.com/SubinoyBera/Book-Recommendation-System/main/artifacts/datasets/books_data.zip
+  raw_data_dir: raw_data
+  ingestion_dir: ingested_dataset
+
+data_validation:
+  root_dir: artifacts/data_validation
+  STATUS_FILE: status.txt
+  valid_data_dir: valid_data
+  books_csvfile: books.csv
+  ratings_csvfile: ratings.csv
+
+data_transformation:
+  root_dir: artifacts/data_transformation
+  serialized_obj_dir: artifacts/serialized_objects
+  common_obj_dir: artifacts/common_objects
+  valid_books_dataset: valid_books_dataset.csv
+  valid_ratings_dataset: valid_ratings_dataset.csv
+
+model_trainer:
+  root_dir: artifacts/ML_model
+  books_pivot_table: books_pivot_table.pkl
+  trained_model: model.pkl
+
+ml_recommender:
+  serialized_obj_dir: artifacts/serialized_objects
+  common_obj_dir: artifacts/common_objects
+  trained_model_dir: artifacts/ML_model
+
+semantic_recommender:
+  root_dir: artifacts/vector_embeddings
+  semantic_books_dataset: final_books_dataset.pkl
+  vectorstore: books_vectorstore

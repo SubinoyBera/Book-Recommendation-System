@@ -7,10 +7,10 @@ from pathlib import Path
 
 import numpy as np
 import streamlit as st
-from src.config.configuration import AppConfiguration
+from src.core.configuration import AppConfiguration
 from src.pipeline.ml_pipeline import MLPipeline
-from src.logger import logging
-from src.exception import AppException
+from src.core.logger import logging
+from src.core.exception import AppException
 
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_chroma import Chroma
@@ -35,8 +35,11 @@ class MLRecommender:
                 self.model = pickle.load(open(self.ml_recommend_config.trained_model_path, "rb"))
                 self.final_ratings = pickle.load(open(self.ml_recommend_config.final_ratings_obj_path, "rb"))
                 self.books_pivot_table = pickle.load(open(self.ml_recommend_config.books_pivot_table_obj_path, "rb"))
+
+                self.obj_loaded = True
+
             else:
-                self.objects_loaded = 0
+                self.obj_loaded = False
 
         except Exception as e:
             logging.error(f"Failed to initialize Recommendation Congiguration: {e}", exc_info=True)
@@ -48,7 +51,6 @@ class MLRecommender:
         This method is used to train the recommendation model.
         It initializes the ML pipeline and trains the model.
         """
-        flag = 0
         dirs = ["artifacts/data_ingestion", "artifacts/data_validation", "artifacts/data_transformation",
                     "artifacts/serialized_objects", "artifacts/common_objects", "artifacts/ML_model"]
         for dir in dirs:
@@ -60,9 +62,6 @@ class MLRecommender:
             pipeline = MLPipeline()
             pipeline.main()
             logging.info("Recommender System successfully trained.")
-
-            flag = 1
-            return flag
 
         except Exception as e:
             logging.error(f"Failed to train recommender system: {e}", exc_info=True)
@@ -275,7 +274,7 @@ class SemanticRecommender:
 # Book Recommender System Application using Streamlit
 # This application provides a user interface for book recommendations using either a Machine Learning or Semantic approach.
 if __name__ == "__main__":
-    st.set_page_config(page_title = "Book Recommendation System", layout = "wide")
+    st.set_page_config(page_title = "Book Recommendation System", layout = "wide", page_icon=":books:")
     
     # Set sidebar title and options
     st.sidebar.title("Options ~")
@@ -284,7 +283,7 @@ if __name__ == "__main__":
                              "Semantic Recommender"]
     )
 
-    for _ in range(21):
+    for _ in range(23):
         st.sidebar.write("")
 
     st.sidebar.markdown("**--->>> Developed and Engineered by SUBINOY BERA**")
@@ -292,33 +291,47 @@ if __name__ == "__main__":
     
     # ML Recommender System
     if option == "ML Recommender":
-        st.header("ML Book Recommender System 📚🎓")
+        st.header("ML Book Recommender System 📚📖")
         st.text("--  ↗️ Collaborative Filtering based End to End Machine Learning book recommendation system!!")
 
         obj = MLRecommender()
 
         if st.button("Train Recommender System"):
-            st.text("# Training Recommender System Started.\n Please Wait....")
-            flag = obj.train_engine()
-            if flag == 1:
-                st.success("Recommender System Successfully Trained!!")
-            else:
-                st.error("Failed to train Recommender System: Error occured during training. Please reload application and try again.")
+            try:
+                with st.spinner("🛠️ Training in Progress ..."):
+                    obj.train_engine()
+                    st.success("🎉 Recommender System Successfully Trained!!")
+
+            except Exception as e:
+                st.error("Failed to train Recommender System! Error occured during training. Please reload application and try again ...")
+                logging.error(f"Recommender System training error: {e}")
+                raise AppException(e, sys)
+
 
         book_names_obj_path = obj.ml_recommend_config.book_names_obj_path
-        book_names = pickle.load(open(book_names_obj_path, "rb"))
-        selected_book = st.selectbox("Type or Select book from the dropdown to get recommendation :",
+        if not os.path.exists(book_names_obj_path):
+            st.error("Required file objects not found. Please retrain the Recommender System.")
+        else:
+            book_names = pickle.load(open(book_names_obj_path, "rb"))
+        
+            selected_book = st.selectbox("Type or Select book from the dropdown to get recommendation :",
                                     book_names)
 
         if st.button("Show Recommendations"):
-            if obj.objects_loaded == 0:
+            if not obj.obj_loaded:
                 st.error("Sorry!! No Recommendation Model found and or other required file objects not found. Please train the Recommender System.")
             else:
-                obj.ml_recommendation_engine(selected_book)
+                try:
+                    obj.ml_recommendation_engine(selected_book)
+
+                except Exception  as e:
+                    st.error("Unexpected Error occureed :( ")
+                    logging.error(f"Ml recommendation engine failure: {e}")
+                    raise AppException(e, sys)
 
     # Semantic Recommender System
     if option == "Semantic Recommender":
-        st.header("Semantic Book Recommender System 📝🔍")
+        st.header("Semantic Book Recommender System 📔🧩")
         st.text("--  ⚙️ Uses Google Embedding model and Vector Similarity Search to give book recommendations based on the description!!")
 
         book_desc = st.text_input("Please write book description...")
@@ -327,5 +340,11 @@ if __name__ == "__main__":
             if not book_desc:
                 st.error("Sorry! Please write a book description in the input-box to provide recommendations.")
             else:
-                obj = SemanticRecommender()
-                obj.semantic_recommendation_engine(book_desc)
+                try:
+                    obj = SemanticRecommender()
+                    obj.semantic_recommendation_engine(book_desc)
+
+                except Exception  as e:
+                    st.error("Unexpected Error occureed :( ")
+                    logging.error(f"Semantic recommendation engine failure: {e}")
+                    raise AppException(e, sys)

@@ -3,15 +3,15 @@ pandas==2.2.3
 scikit-learn==1.7.0
 scipy==1.15.3
 requests==2.32.3
-langchain==0.3.25
-langchain-core==0.3.62
-langchain-community==0.3.25
-langchain-google-genai==2.1.5
-langchain-chroma==0.2.0
-streamlit==1.45.1
+langchain==0.3.26
+langchain-core==0.3.68
+langchain-community==0.3.27
+langchain-google-genai==2.1.7
+langchain-chroma==0.2.4
+streamlit==1.46.1
 PyYAML==6.0.2
 ensure==1.0.4
 python-box==7.3.2
-python-dotenv==1.1.0
-pydantic==2.11.5
+python-dotenv==1.1.1
+pydantic==2.11.7
 -e .

@@ -2,11 +2,9 @@ import sys
 import html
 import pickle
 import pandas as pd
-from pathlib import Path
-from src.logger import logging
-from src.exception import AppException
-from src.utils import create_directories
-from src.config.configuration import AppConfiguration
+from src.core.logger import logging
+from src.core.exception import AppException
+from src.core.configuration import AppConfiguration
 
 class DataTransformation:
     def __init__(self, config = AppConfiguration()):
@@ -17,8 +15,7 @@ class DataTransformation:
             for data validation.
         """
         try:
-            logging.info(f"{'='*20}Data Transformation log started.{'='*20}")
-            self.data_transformation_config = config.data_transformation_config
+            self.data_transformation_config = config.data_transformation_config()
 
         except Exception as e:
             logging.error(f"Data validation Configuration initialization error: {e}", exc_info=True)
@@ -45,10 +42,10 @@ class DataTransformation:
         """
         try:
             logging.info("Data Transformation operation started")
-            books = pd.read_csv(self.data_transformation_config.books_data_path, sep=";", encoding="iso8859", on_bad_lines="skip")
-            ratings = pd.read_csv(self.data_transformation_config.ratings_data_path, sep=";", encoding="iso8859", on_bad_lines="skip")
+            books = pd.read_csv(self.data_transformation_config.books_data_path, encoding="iso8859", on_bad_lines="skip")
+            ratings = pd.read_csv(self.data_transformation_config.ratings_data_path, encoding="iso8859", on_bad_lines="skip")
 
-            books["Title"] = books["Title"].apply(html.unescape)
+            books['Title'] = books["Title"].apply(html.unescape)
             books['Title'] = books["Title"].str.replace(r"\\'", "'", regex=True)
             books['Title'] = books["Title"].str.replace(r'\\"', '', regex=True)
             books['Title'] = books["Title"].str.replace(r'"', "", regex=True)
@@ -100,8 +97,10 @@ class DataTransformation:
         - Raises: AppException If any operation during data transformation or saving fails
         """
         try:
+            logging.info(f"{'='*20}Data Transformation{'='*20}")
             self.transform()
-            logging.info(f"{'='*20}Data Transformation Completed Successfully.{'='*20} \n\n")
+
+            logging.info(f"{'='*20}Data Transformation Completed Successfully{'='*20} \n\n")
         
         except Exception as e:
             logging.error(f"Dataset Transformation error: {e}", exc_info=True)

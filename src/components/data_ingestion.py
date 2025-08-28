@@ -2,10 +2,10 @@ import os
 import sys
 import requests
 import zipfile
-from src.logger import logging
-from src.exception import AppException
+from src.core.logger import logging
+from src.core.exception import AppException
 from src.utils import create_directories
-from src.config.configuration import AppConfiguration
+from src.core.configuration import AppConfiguration
 
 class DataIngestion:
     def __init__(self, app_config = AppConfiguration()):
@@ -14,7 +14,6 @@ class DataIngestion:
         data_ingestion_config: DataIngestionConfig 
         """
         try:
-            logging.info(f"{'='*20}Data Ingestion log started.{'='*20}")
             self.data_ingestion_config = app_config.data_ingestion_config()
 
         except Exception as e:
@@ -32,7 +31,7 @@ class DataIngestion:
         try:
             dataset_url = self.data_ingestion_config.data_download_url
             zip_download_dir = self.data_ingestion_config.raw_data_dir
-            create_directories(zip_download_dir)
+            create_directories([zip_download_dir])
 
             data_filename = os.path.basename(dataset_url)
             zip_file_path = os.path.join(zip_download_dir, data_filename)
@@ -59,7 +58,7 @@ class DataIngestion:
         """
         try:
             ingested_dir = self.data_ingestion_config.ingested_dir
-            create_directories(ingested_dir)
+            create_directories([ingested_dir])
 
             with zipfile.ZipFile(zip_file_path, 'r') as zip_ref:
                 zip_ref.extractall(ingested_dir)
@@ -79,9 +78,10 @@ class DataIngestion:
             AppException: If error occurs during data ingestion
         """
         try:
+            logging.info(f"{'='*20}Data Ingestion{'='*20}")
             zip_file_path = self.download_data()
             self.extract_zip_file(zip_file_path=zip_file_path)
-            logging.info(f"{'='*20}Data Ingestion Completed Successfully.{'='*20} \n\n")
+            logging.info(f"{'='*20}Data Ingestion Completed Successfully{'='*20} \n\n")
         
         except Exception as e:
             logging.error(f"Error in Data Ingestion process: {e}", exc_info=True)

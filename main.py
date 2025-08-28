@@ -1,7 +1,7 @@
 # File: main.py
 import sys
 from src.logger import logging
-from src.exception import AppException
+from src.core.exception import AppException
 from src.pipeline.ml_pipeline import MLPipeline
 
 # Main entry point for the ML pipeline execution

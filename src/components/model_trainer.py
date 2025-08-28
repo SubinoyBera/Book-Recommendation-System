@@ -2,9 +2,9 @@ import sys
 import pickle
 from scipy.sparse import csr_matrix
 from sklearn.neighbors import NearestNeighbors
-from src.logger import logging
-from src.exception import AppException
-from src.config.configuration import AppConfiguration
+from src.core.logger import logging
+from src.core.exception import AppException
+from src.core.configuration import AppConfiguration
 
 class ModelTrainer:
     def __init__(self, app_config = AppConfiguration()):
@@ -15,7 +15,6 @@ class ModelTrainer:
             for model training.
         """
         try:
-            logging.info(f"{'='*20}Model Trainer log started.{'='*20}")
             self.model_trainer_config = app_config.model_trainer_config()
 
         except Exception as e:
@@ -64,8 +63,10 @@ class ModelTrainer:
             If any exception occurs during model training
         """
         try:
+            logging.info(f"{'='*20}Model Training{'='*20}")
             self.train()
-            logging.info(f"{'='*20}Model Training Successfully.{'='*20} \n\n")
+            
+            logging.info(f"{'='*20}Model Training Successfull{'='*20} \n\n")
 
         except Exception as e:
             logging.error(f"Model training failed: {e}", exc_info=True)
