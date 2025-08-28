@@ -12,8 +12,12 @@ from src.pipeline.ml_pipeline import MLPipeline
 from src.core.logger import logging
 from src.core.exception import AppException
 
-from langchain_google_genai import GoogleGenerativeAIEmbeddings
+# Patch sqlite3 with pysqlite3
+__import__('pysqlite3')
+sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+
 from langchain_chroma import Chroma
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from pydantic import SecretStr
 from dotenv import load_dotenv
 load_dotenv()
