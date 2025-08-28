@@ -1,6 +1,6 @@
 # File: main.py
 import sys
-from src.logger import logging
+from src.core.logger import logging
 from src.core.exception import AppException
 from src.pipeline.ml_pipeline import MLPipeline
 
